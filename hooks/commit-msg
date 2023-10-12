@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo "=============================================================================================================="
+echo "Checking commit name..."
+
+INPUT_FILE=$1
+START_LINE=`head -n1 $INPUT_FILE`
+
+PATTERN="^(feat|bug|ref):[[:space:]][A-Z]+[a-z[:space:]]+$"
+
+if [[ ! $START_LINE =~ $PATTERN ]]; then
+  echo "
+  \t\033[41m
+  There is something wrong with your commit message. \n
+  Commit messages in this project must adhere to this contract: \n
+  feat|bug|ref: Test commit message \n
+
+  PS: First later after feat|bug|ref should be CAPITAL and with a space sign before
+  \033[0m
+  "
+  exit 1
+fi
+
+echo "\t\033[32m Success! \033[0m"

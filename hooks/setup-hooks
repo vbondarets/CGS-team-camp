@@ -1,0 +1,27 @@
+#!/bin/bash
+
+echo "=============================================================================================================="
+echo "Hook setupping has been started..."
+
+
+case "$OSTYPE" in
+  solaris*) current_os="SOLARIS" ;;
+  darwin*)  current_os="OSX" ;; 
+  linux*)   current_os="LINUX" ;;
+  bsd*)     current_os="BSD" ;;
+  msys*)    current_os="WINDOWS" ;;
+  *)        current_os="unknown: $OSTYPE" ;;
+esac
+
+
+
+cp ./hooks/pre-commit .git/hooks/
+cp ./hooks/commit-msg .git/hooks/
+
+if [[ ! $current_os =~ "WINDOWS" ]]; then
+  chmod +x .git/hooks/pre-commit
+  chmod +x .git/hooks/commit-msg
+fi
+
+
+echo "\t\033[32m Success! \033[0m"

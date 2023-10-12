@@ -1,0 +1,28 @@
+{
+  "name": "cgs-team-boilerplate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "configure:hooks": "yarn && chmod +x ./hooks/setup-hooks && ./hooks/setup-hooks",
+    "configure:hooks:windows": "yarn && bash hooks/setup-hooks",
+    "start": "yarn && lerna run --parallel start",
+    "lint:fix": "npx eslint packages/**/*.ts packages/**/*.tsx --fix"
+  },
+  "devDependencies": {
+    "eslint": "^8.22.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.4.2",
+    "eslint-plugin-prettier": "^4.2.1",
+    "lerna": "^4.0.0",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {}
+}
