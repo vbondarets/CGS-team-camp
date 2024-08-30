@@ -4,7 +4,7 @@ import Modal from '@mui/material/Modal';
 import { IBasicProps } from '../../types/props.types';
 
 interface IProps extends IBasicProps {
-  children?: string | JSX.Element | JSX.Element[] | (() => JSX.Element);
+  children?: React.ReactNode;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }

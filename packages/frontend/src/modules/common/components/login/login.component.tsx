@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Formik } from 'formik';
-import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 import { IBasicProps } from '../../types/props.types';
 import { Input } from '../input';
 import { Button } from '../button';
 import userSchema from '../../utils/validation/schemas/user.schema';
-import { useLogin } from '../../hooks';
+import { useAuth } from '../../hooks';
 import { Loader } from '../loader';
 import { EAuth } from '../../types/auth.types';
 import { onSubmit } from '../../utils/onSubmit/onSubmit';
-import { ROUTER_KEYS } from '../../consts/app-keys.const';
+import { setError } from '../../utils/setError/setError';
 
 interface IProps extends IBasicProps {
   setCurrentAction: React.Dispatch<React.SetStateAction<EAuth>>;
@@ -19,13 +19,25 @@ export const LoginComponent = ({ className, setCurrentAction }: IProps) => {
   const [email, setEmail] = useState<string | boolean>('');
   const [password, setPassword] = useState<string | boolean>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { mutate: login, error, isSuccess } = useLogin();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const history = useHistory();
+  const { handleLogin, errorLogin, isLoadingLogin } = useAuth();
+
+  const [isLoadingNow, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsLoading(isLoadingLogin);
+  }, [isLoadingLogin]);
+  useEffect(() => {
+    if (errorLogin && errorLogin instanceof Error) {
+      if (axios.isAxiosError(errorLogin)) {
+        setError(errorLogin.response?.data.message, setErrorMessage);
+      }
+      setIsLoading(false);
+    }
+  }, [errorLogin]);
 
   return (
     <div className={className}>
-      {isLoading && <Loader />}
+      {isLoadingNow && <Loader />}
       <Formik
         initialValues={{
           email,
@@ -41,12 +53,8 @@ export const LoginComponent = ({ className, setCurrentAction }: IProps) => {
             setErrorMessage,
             setIsLoading,
             () => {
-              login({ email: email as string, password: password as string });
-              if (isSuccess) {
-                history.push(ROUTER_KEYS.ROOT);
-              }
-            },
-            error
+              handleLogin({ email: email as string, password: password as string });
+            }
           );
         }}
       >
@@ -66,8 +74,8 @@ export const LoginComponent = ({ className, setCurrentAction }: IProps) => {
           <div className="login-form-buttons">
             <Button callback={() => setCurrentAction(EAuth.none)}>Back</Button>
             <Button type="submit">Submit</Button>
-            {errorMessage && <h3 className="error-message">{errorMessage}</h3>}
           </div>
+          {errorMessage && <h3 className="error-message">{errorMessage}</h3>}
         </Form>
       </Formik>
     </div>

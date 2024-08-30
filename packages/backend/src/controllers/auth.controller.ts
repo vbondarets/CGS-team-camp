@@ -14,23 +14,36 @@ export class AuthController {
     const salt = await bcrypt.genSalt(10);
     const hasedPassword = await bcrypt.hash(password, salt);
     const user = await this.userService.createUser({ email, password: hasedPassword });
-    const token = tokenGenerator(user);
+    const token = tokenGenerator({ ...user, password: 'pass' });
     if (user) {
       await mailer.sendConfirmation(user.email, token);
     } else {
       return next(ApiError.internal());
     }
-    return res.send({ status: 'ok' });
+    return res.send({ status: 'ok', message: 'Please check your mail' });
   }
 
-  async confirmUser(req: Request, res: Response, next: NextFunction) {
+  async confirmUser(req: Request, res: Response) {
     const { token } = req.params;
     const payload = verify(token);
     const user = await this.userService.confirm(payload.id);
     if (user) {
       return res.send({ status: 'ok' });
     }
-    return next(ApiError.internal());
+    throw ApiError.internal();
+  }
+
+  async getSelf(req: Request, res: Response) {
+    const currUser = req.user as IUser;
+    if (currUser) {
+      const user = await this.userService.getUserById(currUser.id as string);
+      if (user) {
+        const token = tokenGenerator({ ...user, password: 'pass' });
+        return res.json({ ...user, password: 'pass', token });
+      }
+      throw ApiError.notAuth();
+    }
+    throw ApiError.notAuth();
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
@@ -38,7 +51,11 @@ export class AuthController {
     const user = await this.userService.login(email);
     if (user && user.confirmed) {
       if (await bcrypt.compare(password, user.password)) {
-        return res.send({ token: tokenGenerator(user) });
+        return res.send({
+          token: tokenGenerator({ ...user, password: 'pass' }),
+          ...user,
+          password: 'pass'
+        });
       }
       return next(ApiError.conflict('Wrong password'));
     }

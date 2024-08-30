@@ -1,0 +1,51 @@
+version: '3.8'
+name: todo
+services:
+  frontend:
+    container_name: todo-frontend
+    build:
+      context: ./
+      dockerfile: Dockerfile.frontend
+    restart: always
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./packages/frontend:/app/frontend
+      - /app/frontend/node_modules
+      - /app/frontend/.next
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: yarn start
+  postgres:
+    container_name: todo-db
+    image: postgres:15.3-alpine3.17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  backend:
+    container_name: todo-backend
+    stdin_open: true #test
+    tty: true #test
+    build:
+      context: ./
+      dockerfile: Dockerfile.backend
+    volumes:
+      - ./packages/backend:/app/backend
+      - /app/backend/node_modules
+    restart: always
+    ports:
+      - '4200:4200'
+    depends_on:
+      - postgres
+    command: yarn dev
+    # environment:
+volumes:
+  postgres_data:

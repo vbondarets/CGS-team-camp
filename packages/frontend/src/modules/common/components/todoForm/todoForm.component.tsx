@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
-import { UseMutateFunction } from 'react-query';
 import { IBasicProps } from '../../types/props.types';
 import { Button } from '../button';
 import { ITodo } from '../../types/todo.types';
@@ -12,27 +10,18 @@ import { setError } from '../../utils/setError/setError';
 import { TextArea } from '../textArea';
 
 interface IProps extends IBasicProps {
-  callback: UseMutateFunction<ITodo, unknown, ITodo, unknown>;
+  callback: (value: ITodo) => void;
   action: 'create' | 'update';
   todo?: ITodo;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const TodoFormComponent = ({ className, callback, action, todo, setModalOpen }: IProps) => {
-  const [title, setTitle] = useState<string | boolean>('');
-  const [description, setDescription] = useState<string>('');
-  const [isActive, setActive] = useState<string | boolean>(false);
-  const [isPrivate, setPrivate] = useState<string | boolean>(false);
+  const [title, setTitle] = useState<string | boolean>(todo ? todo.title : '');
+  const [description, setDescription] = useState<string>(todo ? todo.description : '');
+  const [isActive, setActive] = useState<string | boolean>(todo ? todo.active : false);
+  const [isPrivate, setPrivate] = useState<string | boolean>(todo ? todo.private : false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-
-  useEffect(() => {
-    if (todo) {
-      setTitle(todo.title);
-      setDescription(todo.description);
-      setActive(todo.active);
-      setPrivate(todo.private);
-    }
-  }, [todo]);
 
   return (
     <div className={className}>

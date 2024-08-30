@@ -1,63 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { IBasicProps } from '../../types/props.types';
 import { Slider } from '../slider';
 import { Button } from '../button';
-import { useGetTodoByIdQuery, useUpdateTodo } from '../../hooks';
-import { ITodo } from '../../types/todo.types';
+import { useAuth, useTodo } from '../../hooks';
 import { Modal } from '../modal';
 import { TodoForm } from '../todoForm';
 import { Loader } from '../loader';
 import { ErrorCont } from '../error';
-import { useGetUser } from '../../hooks/getUser.query';
 
 interface IProps extends IBasicProps {}
 
 export const TodoComponent = ({ className }: IProps) => {
-  const history = useHistory();
-  const { mutate: updateTodo } = useUpdateTodo();
-  const searchParams: { id: string } = useParams();
+  const navigate = useNavigate();
+  const { setTodoId, todo, todoError, isGetTodoError, isTodoLoading } = useTodo();
+  const { id } = useParams();
+  const { handleUpdateTodo } = useTodo();
   const [modalOpen, setModalOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, isError, isLoading, error } = useGetTodoByIdQuery(searchParams.id);
-  const userData = useGetUser();
-  const [todos, setTodos] = useState<ITodo>({
-    title: '',
-    description: '',
-    active: false,
-    private: true,
-    user: undefined
-  });
+  const { user } = useAuth();
   useEffect(() => {
-    if (data) {
-      setTodos(data);
-    }
-  }, [data]);
+    setTodoId(Number.isInteger(Number(id)) ? Number(id) : undefined);
+    return () => {
+      setTodoId();
+    };
+  }, [id]);
   return (
     <div className={className}>
-      {isError && <ErrorCont message={error instanceof Error ? error.message : 'Unknown Error'} />}
-      {isLoading && <Loader />}
-      {!isError && !isLoading && (
+      {isGetTodoError && (
+        <ErrorCont message={todoError instanceof Error ? todoError.message : 'Unknown Error'} />
+      )}
+      {isTodoLoading && <Loader />}
+      {!isGetTodoError && !isTodoLoading && todo && (
         <>
-          <h1 className="todo-title">{todos.title}</h1>
+          <h1 className="todo-title">{todo.title}</h1>
           <h4 className="todo-heading">Description</h4>
-          <p className="todo-description">{todos.description}</p>
+          <p className="todo-description">{todo.description}</p>
           <div className="todo-options">
             <div className="todo-option">
               <h4 className="todo-option-name">Complited</h4>
               <div className="todo-option-slider">
                 <Slider
-                  status={!todos.active as boolean}
-                  todo={{
-                    id: todos.id as string,
-                    title: todos.title,
-                    description: todos.description,
-                    active: todos.active,
-                    private: todos.private
-                  }}
-                  disabled={userData.data?.user.id !== todos.user?.id}
+                  status={!todo.active as boolean}
+                  todo={todo}
+                  disabled={user?.id !== todo.user?.id}
                   field="active"
-                  callback={updateTodo}
+                  callback={handleUpdateTodo}
                 />
               </div>
             </div>
@@ -65,17 +52,11 @@ export const TodoComponent = ({ className }: IProps) => {
               <h4 className="todo-option-name">Private</h4>
               <div className="todo-option-slider">
                 <Slider
-                  status={todos.private as boolean}
-                  todo={{
-                    id: todos.id as string,
-                    title: todos.title,
-                    description: todos.description,
-                    active: todos.active,
-                    private: todos.private
-                  }}
-                  disabled={userData.data?.user.id !== todos.user?.id}
+                  status={todo.private as boolean}
+                  todo={todo}
+                  disabled={user?.id !== todo.user?.id}
                   field="private"
-                  callback={updateTodo}
+                  callback={handleUpdateTodo}
                 />
               </div>
             </div>
@@ -83,12 +64,12 @@ export const TodoComponent = ({ className }: IProps) => {
           <Modal isOpen={modalOpen} setIsOpen={setModalOpen}>
             <TodoForm
               action="update"
-              todo={todos}
-              callback={updateTodo}
+              todo={todo}
+              callback={handleUpdateTodo}
               setModalOpen={setModalOpen}
             />
           </Modal>
-          {userData.data?.user.id === todos.user?.id && (
+          {user?.id === todo.user?.id && (
             <div className="edit-button">
               <Button
                 width="100px"
@@ -101,7 +82,7 @@ export const TodoComponent = ({ className }: IProps) => {
             </div>
           )}
           <div className="back-button">
-            <Button width="20vw" callback={() => history.goBack()}>
+            <Button width="20vw" callback={() => navigate(-1)}>
               Back
             </Button>
           </div>

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { UseMutateFunction } from 'react-query';
 import { IBasicProps } from '../../types/props.types';
 import { ITodo } from '../../types/todo.types';
 
 interface IProps extends IBasicProps {
   status: boolean;
-  callback?: UseMutateFunction<ITodo, unknown, ITodo, unknown>;
+  callback?: (data: ITodo) => void;
   todo: ITodo;
   field: string;
   disabled?: boolean;

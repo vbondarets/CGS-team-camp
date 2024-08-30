@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider, QueryCache } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { ThemeProvider } from 'styled-components';
 import { MainRouter } from '../navigation';
@@ -11,23 +13,35 @@ import '../../style.css';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      keepPreviousData: true,
+      keepPreviousData: false,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
-      cacheTime: Infinity
+      cacheTime: Number.POSITIVE_INFINITY
     }
-  }
+  },
+  queryCache: new QueryCache({
+    onError: async (error: any, query) => {
+      if (query.state.data !== undefined) {
+        console.error(`Something went wrong: ${error.message}`);
+      }
+      if (error.response) {
+        console.log(error.response.status, '🟡 query');
+      }
+    }
+  })
 });
 
 const AppContainer = () => (
-  <ThemeProvider theme={theme}>
-    <Styled.GlobalStyles />
-    <QueryClientProvider client={queryClient}>
-      <MainRouter />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  </ThemeProvider>
+  <BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <Styled.GlobalStyles />
+      <QueryClientProvider client={queryClient}>
+        <MainRouter />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ThemeProvider>
+  </BrowserRouter>
 );
 
 export default AppContainer;

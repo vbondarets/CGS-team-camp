@@ -1,4 +1,4 @@
-import { ITodo } from '../common/types/todo.types';
+import { ITodo, ITodoRes } from '../common/types/todo.types';
 import { HttpSerivce } from './http.service';
 
 class TodoService extends HttpSerivce {
@@ -7,14 +7,14 @@ class TodoService extends HttpSerivce {
     super();
   }
 
-  async getTodos(queryParams: string) {
+  async getTodos(queryParams: string): Promise<ITodoRes> {
     const response = await this.get({
       url: `todos/${queryParams}`
     });
     return response.data;
   }
 
-  async getTodoById(id: string) {
+  async getTodoById(id: number | string): Promise<ITodo> {
     const response = await this.get({
       url: `todos/${id}`
     });
@@ -37,7 +37,7 @@ class TodoService extends HttpSerivce {
     return response.data;
   }
 
-  async deleteTodoById(id: string) {
+  async deleteTodoById(id: string | number) {
     const response = await this.delete({
       url: `todos/${id}`
     });

@@ -1,23 +1,26 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IBasicProps } from '../../types/props.types';
 import { Button } from '../button';
 import { Slider } from '../slider/slider.styled';
-import { useDeleteTodoQuery } from '../../hooks/deleteTodoById.query';
-import { useUpdateTodo } from '../../hooks';
+import { useAuth } from '../../hooks';
 import { ROUTER_KEYS } from '../../consts/app-keys.const';
-import { useGetUser } from '../../hooks/getUser.query';
 import { ITodo } from '../../types/todo.types';
 
 interface IProps extends IBasicProps {
   todos: Array<ITodo>;
+  handleUpdateTodo: (data: ITodo) => void;
+  handleDeleteTodo: (id: number | string) => void;
 }
 
-export const TodoTableComponent = ({ className, todos }: IProps) => {
-  const history = useHistory();
-  const { mutate: deleteTodo } = useDeleteTodoQuery();
-  const { mutate: updateTodo } = useUpdateTodo();
-  const { data } = useGetUser();
+export const TodoTableComponent = ({
+  className,
+  todos,
+  handleUpdateTodo,
+  handleDeleteTodo
+}: IProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <div className={className}>
@@ -40,16 +43,16 @@ export const TodoTableComponent = ({ className, todos }: IProps) => {
                 <div className="table-todo-actions-container">
                   <Button
                     callback={() => {
-                      history.push(`${ROUTER_KEYS.TODO_PAGE}${todo.id}`);
+                      navigate(`${ROUTER_KEYS.TODO_PAGE}${todo.id}`);
                     }}
                   >
                     View
                   </Button>
-                  {data?.user.id === todo.user?.id && (
+                  {user?.id === todo.user?.id && (
                     <>
                       <Button
                         callback={() => {
-                          deleteTodo(todo.id as string);
+                          handleDeleteTodo(todo.id as string);
                         }}
                       >
                         Delete
@@ -58,7 +61,7 @@ export const TodoTableComponent = ({ className, todos }: IProps) => {
                         status={!todo.active}
                         todo={todo}
                         field="active"
-                        callback={updateTodo}
+                        callback={handleUpdateTodo}
                       />
                     </>
                   )}

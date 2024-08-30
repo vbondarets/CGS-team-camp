@@ -1,14 +1,16 @@
+/* eslint-disable arrow-body-style */
 import React from 'react';
-import { Redirect, Route, RouteProps } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { APP_KEYS } from '../common/consts';
-import { useGetUser } from '../common/hooks/getUser.query';
+import TodoPageContainer from '../pages/todo';
+import HomePageContainer from '../home';
 
-interface IProps extends RouteProps {}
-
-export const PrivateRoute = ({ ...rest }: IProps) => {
-  const { data } = useGetUser();
-  if (!data?.token) {
-    return <Redirect to={APP_KEYS.ROUTER_KEYS.AUTH} />;
-  }
-  return <Route {...rest} />;
+export const PrivateRoutes = () => {
+  return (
+    <Routes>
+      <Route path={APP_KEYS.ROUTER_KEYS.ROOT} element={<HomePageContainer />} />
+      <Route path={APP_KEYS.ROUTER_KEYS.TODO} element={<TodoPageContainer />} />
+      <Route path="*" element={<Navigate to={APP_KEYS.ROUTER_KEYS.ROOT} replace />} />
+    </Routes>
+  );
 };

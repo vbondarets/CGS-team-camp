@@ -2,7 +2,7 @@ import React from 'react';
 import { IBasicProps } from '../../types/props.types';
 
 interface IProps extends IBasicProps {
-  children: string | JSX.Element | JSX.Element[] | (() => JSX.Element);
+  children: React.ReactNode;
   callback?: () => void;
   active?: boolean;
   width?: string;

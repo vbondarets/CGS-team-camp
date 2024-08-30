@@ -4,7 +4,7 @@ import { Svg } from '../svg';
 
 interface IProps extends IBasicProps {
   searchValue: string;
-  setSearchValue: React.Dispatch<React.SetStateAction<string>>;
+  setSearchValue: (value: string) => void;
 }
 
 export const SearchBarComponent = ({ className, searchValue, setSearchValue }: IProps) => (

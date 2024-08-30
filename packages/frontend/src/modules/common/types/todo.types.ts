@@ -8,3 +8,7 @@ export interface ITodo {
   private: boolean;
   user?: IUser;
 }
+export interface ITodoRes {
+  todos: ITodo[];
+  pages: number;
+}

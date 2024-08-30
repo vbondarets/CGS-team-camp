@@ -80,6 +80,11 @@ export default class TodoService {
       ],
       relations: {
         user: true
+      },
+      select: {
+        user: {
+          password: false
+        }
       }
     });
     return todo;

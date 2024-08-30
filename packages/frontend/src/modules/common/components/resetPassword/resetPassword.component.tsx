@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import { IBasicProps } from '../../types/props.types';
 import { Input } from '../input';
@@ -14,12 +14,13 @@ interface IProps extends IBasicProps {}
 export const ResetPasswordComponent = ({ className }: IProps) => {
   const [password, setPassword] = useState<string | boolean>('');
   const [confPassword, setConfPass] = useState<string | boolean>('');
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { mutate: resetPassword, isSuccess, isError, isLoading, error } = useResetPassword();
 
   useEffect(() => {
     if (isSuccess) {
-      history.push('/auth');
+      navigate('/auth');
     }
   }, [isSuccess]);
 
@@ -42,7 +43,7 @@ export const ResetPasswordComponent = ({ className }: IProps) => {
           if (password && confPassword === password) {
             resetPassword({
               password: password as string,
-              token: history.location.pathname.split('/')[2]
+              token: location.pathname.split('/')[2]
             });
           }
         }}
@@ -53,7 +54,7 @@ export const ResetPasswordComponent = ({ className }: IProps) => {
           <div className="form-buttons">
             <Button
               callback={() => {
-                history.goBack();
+                navigate(-1);
               }}
             >
               Back

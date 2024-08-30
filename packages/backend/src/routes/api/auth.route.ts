@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { isAuth } from '../../middlewares/isAuth';
 import authController from '../../controllers/auth.controller';
 import { wrapper } from '../../middlewares/ctrlWrapper';
 import isExist from '../../middlewares/isExist';
@@ -9,6 +10,7 @@ import userSchema from '../../helpers/joiSchemas/user.schema';
 
 const authRouter: Router = Router();
 
+authRouter.get('/self', isAuth(), wrapper(authController.getSelf.bind(authController)));
 authRouter.post(
   '/register',
   validation(userSchema),

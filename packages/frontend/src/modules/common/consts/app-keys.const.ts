@@ -8,6 +8,9 @@ export const STORAGE_KEYS = {
 
 // React-query keys
 export const QUERY_KEYS = {
+  SELF: 'SELF',
+  TODOS: 'TODOS',
+  TODO: 'TODO',
   EXAMPLE: 'EXAMPLE',
   TOKEN: 'TOKEN',
   STATISTIC: 'statistic',
@@ -28,7 +31,8 @@ export const BACKEND_KEYS = {
     AUTH: 'auth',
     REGISTER: 'auth/register',
     LOGIN: 'auth/login',
-    FORGOT_PASSWORD: 'auth/reset-password'
+    FORGOT_PASSWORD: 'auth/reset-password',
+    SELF: 'auth/self'
   }
 };
 

@@ -8,7 +8,7 @@ type TConfig<T> = {
 
 export class HttpSerivce {
   constructor(
-    protected baseUrl = process.env.BE_URL || 'http://localhost:4200',
+    protected baseUrl = process.env.REACT_APP_BE_URL || 'http://localhost:4200',
     protected fetchingService = axios,
     protected apiVersion = 'api'
   ) {

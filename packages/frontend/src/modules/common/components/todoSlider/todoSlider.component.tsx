@@ -1,30 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EffectCoverflow } from 'swiper/modules';
 import { IBasicProps } from '../../types/props.types';
 import { Button } from '../button';
 import { Slider } from '../slider/slider.styled';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { useDeleteTodoQuery } from '../../hooks/deleteTodoById.query';
-import { useUpdateTodo } from '../../hooks';
+import { useAuth } from '../../hooks';
 import { ROUTER_KEYS } from '../../consts/app-keys.const';
-import { useGetUser } from '../../hooks/getUser.query';
 import { ITodo } from '../../types/todo.types';
 
 interface IProps extends IBasicProps {
   todos: Array<ITodo>;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setPage: (value: number) => void;
   page: number;
   pagesCount: number;
+  handleUpdateTodo: (data: ITodo) => void;
+  handleDeleteTodo: (id: number | string) => void;
 }
 
-export const TodoSliderComponent = ({ className, todos, setPage, page, pagesCount }: IProps) => {
-  const history = useHistory();
-  const { mutate: deleteTodo } = useDeleteTodoQuery();
-  const { mutate: updateTodo } = useUpdateTodo();
-  const { data } = useGetUser();
+export const TodoSliderComponent = ({
+  className,
+  todos,
+  setPage,
+  page,
+  pagesCount,
+  handleUpdateTodo,
+  handleDeleteTodo
+}: IProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [currIndex, setCurrIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
   const [direction, setDirection] = useState('');
@@ -83,16 +89,16 @@ export const TodoSliderComponent = ({ className, todos, setPage, page, pagesCoun
               <div className="todo-slider-buttons">
                 <Button
                   callback={() => {
-                    history.push(`${ROUTER_KEYS.TODO_PAGE}${todo.id}`);
+                    navigate(`${ROUTER_KEYS.TODO_PAGE}${todo.id}`);
                   }}
                 >
                   View
                 </Button>
-                {data?.user.id === todo.user?.id && (
+                {user?.id === todo.user?.id && (
                   <>
                     <Button
                       callback={() => {
-                        deleteTodo(todo.id as string);
+                        handleDeleteTodo(todo.id as string);
                       }}
                     >
                       Delete
@@ -101,7 +107,7 @@ export const TodoSliderComponent = ({ className, todos, setPage, page, pagesCoun
                       status={!todo.active}
                       todo={todo}
                       field="active"
-                      callback={updateTodo}
+                      callback={handleUpdateTodo}
                     />
                   </>
                 )}

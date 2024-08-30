@@ -1,0 +1,16 @@
+FROM node:18-alpine3.17
+
+WORKDIR /app/backend
+
+EXPOSE 4200
+
+RUN corepack prepare yarn@3.5.1 --activate
+
+COPY .yarnrc.yml .
+COPY ./packages/backend/.env ./.env
+COPY ./packages/backend/package.json .
+COPY ./packages/backend .
+
+RUN yarn
+
+CMD ["yarn", "dev"]

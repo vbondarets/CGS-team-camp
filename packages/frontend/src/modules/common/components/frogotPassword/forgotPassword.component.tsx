@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Form, Formik } from 'formik';
 import { IBasicProps } from '../../types/props.types';
@@ -13,12 +13,12 @@ interface IProps extends IBasicProps {}
 
 export const ForgotPasswordComponent = ({ className }: IProps) => {
   const [email, setEmail] = useState<string | boolean>('');
-  const history = useHistory();
+  const navigate = useNavigate();
   const { mutate: forgotPassword, isSuccess, isError, isLoading, error } = useForgotPassword();
 
   useEffect(() => {
     if (isSuccess) {
-      history.push('/auth');
+      navigate('/auth');
     }
   }, [isSuccess, isError]);
 
@@ -47,7 +47,7 @@ export const ForgotPasswordComponent = ({ className }: IProps) => {
           <div className="form-buttons">
             <Button
               callback={() => {
-                history.push('/auth');
+                navigate('/auth');
               }}
             >
               Back

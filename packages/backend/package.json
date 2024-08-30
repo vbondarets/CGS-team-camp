@@ -1,14 +1,15 @@
 {
-  "name": "@cgs-team-boilerplate/backend",
+  "name": "@todo/backend",
   "version": "1.0.0",
-  "description": "Mongoose Node.js Express TypeScript application boilerplate with best practices for API development.",
-  "author": "Paul Cham",
+  "description": "",
+  "author": "",
+  "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
     "tsc": "tsc",
     "watch-tsc": "tsc -w",
-    "deploy": "node dist/server.js",
-    "watch-deploy": "nodemon dist/server.js",
+    "deploy": "node dist/index.js",
+    "watch-deploy": "nodemon dist/index.js",
     "server": "concurrently \"npm run watch-tsc\" \"npm run watch-deploy\"",
     "start": "yarn build && yarn deploy",
     "build": "tsc",
@@ -39,8 +40,7 @@
     "prettier": "^2.7.1",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.0",
-    "typeorm": "^0.3.7",
-    "typescript": "^4.7.4"
+    "typeorm": "^0.3.7"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -54,7 +54,8 @@
     "@types/passport": "^1.0.13",
     "@types/passport-jwt": "^3.0.10",
     "concurrently": "^4.1.0",
-    "nodemon": "^1.19.0",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
     "tslint": "^6.1.3",
     "typescript": "^4.7.4"
   }
