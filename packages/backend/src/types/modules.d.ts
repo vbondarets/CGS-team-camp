@@ -1,3 +1,5 @@
+import { IUser } from './user.type';
+
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -5,6 +7,9 @@ declare global {
       JWT_SECRET: string;
       JWT_EXPIRATION: string;
     }
+  }
+  namespace Express {
+    interface User extends IUser {}
   }
 }
 

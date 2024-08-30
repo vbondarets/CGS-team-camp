@@ -1,26 +1,21 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Button, TodoListButton } from '../button/button.styled';
 import { IBasicProps } from '../../types/props.types';
 import { Modal } from '../modal';
-import { useLogOut } from '../../hooks/logOut.query';
+import { useAuth } from '../../hooks';
 
 interface IProps extends IBasicProps {}
 
 export const NavigationComponent = ({ className }: IProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { mutate: logOut } = useLogOut();
-  const history = useHistory();
+  const { handleLogOut } = useAuth();
 
   return (
     <div className={className}>
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <Button
           callback={() => {
-            logOut();
-            setTimeout(() => {
-              history.push('/auth');
-            }, 100);
+            handleLogOut();
           }}
         >
           Log Out

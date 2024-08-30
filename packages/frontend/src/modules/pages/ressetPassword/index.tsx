@@ -1,10 +1,10 @@
 import React from 'react';
 import { ResetPassword } from '../../common/components/resetPassword';
 
-const resetPageContainer = () => (
+const ResetPageContainer = () => (
   <div>
     <ResetPassword />
   </div>
 );
 
-export default resetPageContainer;
+export default ResetPageContainer;

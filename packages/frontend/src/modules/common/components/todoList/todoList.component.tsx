@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { IBasicProps } from '../../types/props.types';
 import { Button } from '../button';
 import { Slider } from '../slider/slider.styled';
-import { useDeleteTodoQuery } from '../../hooks/deleteTodoById.query';
-import { useUpdateTodo } from '../../hooks';
+import { useAuth } from '../../hooks';
 import { ROUTER_KEYS } from '../../consts/app-keys.const';
-import { useGetUser } from '../../hooks/getUser.query';
 import { ITodo } from '../../types/todo.types';
 
 interface IProps extends IBasicProps {
   todos: Array<ITodo>;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setPage: (value: number) => void;
   page: number;
   pagesCount: number;
+  handleUpdateTodo: (data: ITodo) => void;
+  handleDeleteTodo: (id: number | string) => void;
 }
 
-export const TodoListComponent = ({ className, todos, page, pagesCount, setPage }: IProps) => {
-  const history = useHistory();
-  const { mutate: deleteTodo } = useDeleteTodoQuery();
-  const { mutate: updateTodo } = useUpdateTodo();
-  const { data } = useGetUser();
+export const TodoListComponent = ({
+  className,
+  todos,
+  page,
+  pagesCount,
+  setPage,
+  handleUpdateTodo,
+  handleDeleteTodo
+}: IProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [currIndex, setCurrIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
   const [direction, setDirection] = useState('');
@@ -77,16 +83,16 @@ export const TodoListComponent = ({ className, todos, page, pagesCount, setPage 
               <div className="todo-list-buttons">
                 <Button
                   callback={() => {
-                    history.push(`${ROUTER_KEYS.TODO_PAGE}${todo.id}`);
+                    navigate(`${ROUTER_KEYS.TODO_PAGE}${todo.id}`);
                   }}
                 >
                   View
                 </Button>
-                {data?.user.id === todo.user?.id && (
+                {user?.id === todo.user?.id && (
                   <>
                     <Button
                       callback={() => {
-                        deleteTodo(todo.id as string);
+                        handleDeleteTodo(todo.id as string);
                       }}
                     >
                       Delete
@@ -95,7 +101,7 @@ export const TodoListComponent = ({ className, todos, page, pagesCount, setPage 
                       status={!todo.active}
                       todo={todo}
                       field="active"
-                      callback={updateTodo}
+                      callback={handleUpdateTodo}
                     />
                   </>
                 )}
@@ -104,8 +110,6 @@ export const TodoListComponent = ({ className, todos, page, pagesCount, setPage 
           </SwiperSlide>
         ))}
       </Swiper>
-      {/* </InfiniteScroll> */}
-      {/* {page < pagesCount && <p className="load-more">go next</p>} */}
     </div>
   );
 };

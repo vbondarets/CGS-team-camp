@@ -8,6 +8,13 @@ class AuthService extends HttpSerivce {
     super();
   }
 
+  async getSelf(): Promise<IUser> {
+    const response = await this.get({
+      url: BACKEND_KEYS.AUTH.SELF
+    });
+    return response.data;
+  }
+
   async register(user: IUser) {
     const response = await this.post({
       url: BACKEND_KEYS.AUTH.REGISTER,
@@ -16,7 +23,7 @@ class AuthService extends HttpSerivce {
     return response.data;
   }
 
-  async login(user: IUser) {
+  async login(user: IUser): Promise<IUser> {
     const response = await this.post({
       url: BACKEND_KEYS.AUTH.LOGIN,
       data: user

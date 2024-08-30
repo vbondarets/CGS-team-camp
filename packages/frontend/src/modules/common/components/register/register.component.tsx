@@ -1,31 +1,46 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Form, Formik } from 'formik';
 import { IBasicProps } from '../../types/props.types';
 import { Button } from '../button';
 import { Input } from '../input';
-import { useRegister } from '../../hooks';
+import { useAuth } from '../../hooks';
 import userSchema from '../../utils/validation/schemas/user.schema';
 import { Loader } from '../loader';
 import { EAuth } from '../../types/auth.types';
 import { onSubmit } from '../../utils/onSubmit/onSubmit';
+import { setError } from '../../utils/setError/setError';
 
 interface IProps extends IBasicProps {
   setCurrentAction: React.Dispatch<React.SetStateAction<EAuth>>;
 }
 
 export const RegisterComponent = ({ className, setCurrentAction }: IProps) => {
+  const { handleRegister, isLoadingRegister, errorRegister, isRegisterSuccess } = useAuth();
   const [email, setEmail] = useState<string | boolean>('');
   const [password, setPassword] = useState<string | boolean>('');
   const [passwordConf, setPasswordConf] = useState<string | boolean>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { mutate: register, error, isSuccess } = useRegister();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(isLoadingRegister);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isRegisterSuccess) {
       setCurrentAction(EAuth.none);
     }
-  }, [isSuccess]);
+  }, [isRegisterSuccess]);
+
+  useEffect(() => {
+    setIsLoading(isLoadingRegister);
+  }, [isLoadingRegister]);
+
+  useEffect(() => {
+    if (errorRegister && errorRegister instanceof Error) {
+      if (axios.isAxiosError(errorRegister)) {
+        setError(errorRegister.response?.data.message, setErrorMessage);
+      }
+      setIsLoading(false);
+    }
+  }, [errorRegister]);
 
   return (
     <div className={className}>
@@ -47,9 +62,8 @@ export const RegisterComponent = ({ className, setCurrentAction }: IProps) => {
             setErrorMessage,
             setIsLoading,
             () => {
-              register({ email: email as string, password: password as string });
-            },
-            error
+              handleRegister({ email: email as string, password: password as string });
+            }
           );
         }}
       >

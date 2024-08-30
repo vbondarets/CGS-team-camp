@@ -3,9 +3,9 @@ import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 
-import AppRouter from './routes';
+import AppRouter from './routes/index';
 import connectDB from './config/database';
-import errorHandler from './middlewares/ErrorHandler.js';
+import errorHandler from './middlewares/ErrorHandler';
 import { JWTStrategy } from './utils/strategies/passport';
 
 const app = express();
